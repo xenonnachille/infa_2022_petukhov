@@ -1,1 +1,82 @@
+import pygame
+from pygame.draw import *
+from random import randint
 
+pygame.mixer.pre_init(44100, -16, 1, 512)
+pygame.init()
+
+FPS = 2
+screen = pygame.display.set_mode((1200, 900))
+
+RED = (255, 0, 0)
+BLUE = (0, 0, 255)
+YELLOW = (255, 255, 0)
+GREEN = (0, 255, 0)
+MAGENTA = (255, 0, 255)
+CYAN = (0, 255, 255)
+BLACK = (0, 0, 0)
+COLORS = [RED, BLUE, YELLOW, GREEN, MAGENTA, CYAN]
+
+SCORE = 0
+
+x_rect = randint(150, 1000)
+r_rect = 25
+y_rect = 100
+color = COLORS[randint(0, 5)]
+speed = 50
+
+
+def new_ball():
+    global x_ball, y_ball, r_ball
+    x_ball = randint(100, 1100)
+    y_ball = randint(100, 900)
+    r_ball = randint(10, 100)
+    color = COLORS[randint(0, 5)]
+    circle(screen, color, (x_ball, y_ball), r_ball)
+
+
+pygame.display.update()
+clock = pygame.time.Clock()
+finished = False
+
+while not finished:
+    clock.tick(FPS)
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            finished = True
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            x = event.pos[0]
+            y = event.pos[1]
+            if ((x - x_ball) ** 2 + (y - y_ball) ** 2) <= r_ball ** 2:
+                SCORE += 200 / r_ball
+                pygame.display.update()
+                print(round(SCORE, 1))
+            elif x_rect <= x <= x_rect + r_rect and y_rect <= y <= y_rect + r_rect:
+                    SCORE += 100
+                    pygame.display.update()
+                    print(round(SCORE, 1))
+    text = pygame.font.Font(None, 36)
+    text_1 = text.render(str(round(SCORE, 1)), 1, MAGENTA)
+    screen.blit(text_1, (120, 120))
+
+    N_1 = randint(1, 3)
+
+    for i in range(N_1):
+        new_ball()
+
+    dt = clock.tick(50) /10
+
+    y_rect += speed * dt
+    pygame.draw.rect(screen, color, (x_rect, int(y_rect), r_rect, r_rect))
+    pygame.display.flip()
+    if y_rect > 1000:
+        y_rect = 0
+        x_rect = randint(150, 1000)
+        color = COLORS[randint(0, 5)]
+
+
+
+    pygame.display.update()
+    screen.fill(BLACK)
+
+pygame.quit()
