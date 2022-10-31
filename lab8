@@ -2,7 +2,7 @@ import pygame
 from pygame.draw import *
 from random import randint
 
-pygame.mixer.pre_init(44100, -16, 1, 512)
+
 pygame.init()
 
 FPS = 2
@@ -23,7 +23,7 @@ x_rect = randint(150, 1000)
 r_rect = 25
 y_rect = 100
 color = COLORS[randint(0, 5)]
-speed = 50
+speed = [50,50]
 
 
 def new_ball():
@@ -60,20 +60,21 @@ while not finished:
     screen.blit(text_1, (120, 120))
 
     N_1 = randint(1, 3)
-
     for i in range(N_1):
         new_ball()
 
     dt = clock.tick(50) /10
 
-    y_rect += speed * dt
+    y_rect += speed[0] * dt
+    x_rect += speed[1] * dt
     pygame.draw.rect(screen, color, (x_rect, int(y_rect), r_rect, r_rect))
     pygame.display.flip()
-    if y_rect > 1000:
-        y_rect = 0
-        x_rect = randint(150, 1000)
+    if y_rect > 1000 or y_rect < 0:
+        speed[0] = -1*speed[0]
         color = COLORS[randint(0, 5)]
-
+    if x_rect > 1000 or x_rect < 0:
+        speed[1] = -1*speed[1]
+        color = COLORS[randint(0, 5)]
 
 
     pygame.display.update()
