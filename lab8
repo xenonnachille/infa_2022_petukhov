@@ -29,7 +29,7 @@ balls = []
 def new_ball():
     global balls
     x_ball = randint(100, 900)
-    y_ball = randint(100, 700)
+    y_ball = randint(100, 600)
     r_ball = randint(10, 100)
     color_ball = COLORS[randint(0, 5)]
     speed_ball = [randint(0,10), randint(0,10)]
