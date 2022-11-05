@@ -5,8 +5,8 @@ from random import randint
 
 pygame.init()
 
-FPS = 2
-screen = pygame.display.set_mode((1200, 900))
+FPS = 50
+screen = pygame.display.set_mode((1000, 700))
 
 RED = (255, 0, 0)
 BLUE = (0, 0, 255)
@@ -19,25 +19,29 @@ COLORS = [RED, BLUE, YELLOW, GREEN, MAGENTA, CYAN]
 
 SCORE = 0
 
-x_rect = randint(150, 1000)
+x_rect = randint(150, 900)
 r_rect = 25
-y_rect = 100
-color = COLORS[randint(0, 5)]
-speed = [50,50]
+y_rect = randint(100,600)
+color_rect = COLORS[randint(0, 5)]
+speed_rect = [12,12]
 
-
+balls = []
 def new_ball():
-    global x_ball, y_ball, r_ball
-    x_ball = randint(100, 1100)
-    y_ball = randint(100, 900)
+    global balls
+    x_ball = randint(100, 900)
+    y_ball = randint(100, 700)
     r_ball = randint(10, 100)
-    color = COLORS[randint(0, 5)]
-    circle(screen, color, (x_ball, y_ball), r_ball)
+    color_ball = COLORS[randint(0, 5)]
+    speed_ball = [randint(0,10), randint(0,10)]
+    balls.append([color_ball,speed_ball,x_ball, y_ball, r_ball])
+
 
 
 pygame.display.update()
 clock = pygame.time.Clock()
 finished = False
+for i in range(3):
+    new_ball()
 
 while not finished:
     clock.tick(FPS)
@@ -47,11 +51,14 @@ while not finished:
         elif event.type == pygame.MOUSEBUTTONDOWN:
             x = event.pos[0]
             y = event.pos[1]
-            if ((x - x_ball) ** 2 + (y - y_ball) ** 2) <= r_ball ** 2:
-                SCORE += 200 / r_ball
-                pygame.display.update()
-                print(round(SCORE, 1))
-            elif x_rect <= x <= x_rect + r_rect and y_rect <= y <= y_rect + r_rect:
+            for i in range(len(balls)):
+                if ((x - balls[i][2]) ** 2 + (y - balls[i][3]) ** 2) <= balls[i][4] ** 2:
+                    SCORE += int(500 / (balls[i][1][0]**2 + balls[i][1][1]**2 + balls[i][4]**2)**0.5)
+                    pygame.display.update()
+                    print(round(SCORE, 1))
+                    balls.pop(i)
+                    new_ball()
+            if x_rect <= x <= x_rect + r_rect and y_rect <= y <= y_rect + r_rect:
                     SCORE += 100
                     pygame.display.update()
                     print(round(SCORE, 1))
@@ -59,25 +66,33 @@ while not finished:
     text_1 = text.render(str(round(SCORE, 1)), 1, MAGENTA)
     screen.blit(text_1, (120, 120))
 
-    N_1 = randint(1, 3)
-    for i in range(N_1):
-        new_ball()
 
-    dt = clock.tick(50) /10
 
-    y_rect += speed[0] * dt
-    x_rect += speed[1] * dt
-    pygame.draw.rect(screen, color, (x_rect, int(y_rect), r_rect, r_rect))
+    for i in range(len(balls)):
+        if balls[i][2] + balls[i][4] > 1000 or balls[i][2] - balls[i][4]< 0:
+            balls[i][1][0] *= -1
+        if balls[i][3] +balls[i][4] > 700 or balls[i][3] - balls[i][4] < 0:
+            balls[i][1][1] *= -1
+        balls[i][2] += balls[i][1][0]
+        balls[i][3] += balls[i][1][1]
+        circle(screen, balls[i][0], (balls[i][2], balls[i][3]), balls[i][4])
+        pygame.display.flip()
+
+    if x_rect + r_rect > 1000 or x_rect < 0:
+        speed_rect[0] *= -1
+        color_rect = COLORS[randint(0, 5)]
+    if y_rect + r_rect> 700 or y_rect < 0:
+        speed_rect[1] *= -1
+        color_rect = COLORS[randint(0, 5)]
+    x_rect += speed_rect[0]
+    y_rect += speed_rect[1]
+    pygame.draw.rect(screen, color_rect, (x_rect, y_rect, r_rect, r_rect))
     pygame.display.flip()
-    if y_rect > 1000 or y_rect < 0:
-        speed[0] = -1*speed[0]
-        color = COLORS[randint(0, 5)]
-    if x_rect > 1000 or x_rect < 0:
-        speed[1] = -1*speed[1]
-        color = COLORS[randint(0, 5)]
+
 
 
     pygame.display.update()
     screen.fill(BLACK)
 
 pygame.quit()
+
