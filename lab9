@@ -184,7 +184,8 @@ SCORE = 0
 
 clock = pygame.time.Clock()
 gun = Gun(screen)
-target = Target()
+target_1 = Target()
+target_2 = Target()
 finished = False
 
 while not finished:
@@ -194,7 +195,8 @@ while not finished:
     screen.blit(text_1, (100, 50))
     pygame.display.update()
     gun.draw()
-    target.draw()
+    target_1.draw()
+    target_2.draw()
     for b in balls:
         b.draw()
     pygame.display.update()
@@ -212,10 +214,18 @@ while not finished:
 
     for b in balls:
         b.move()
-        if b.hittest(target) and target.live:
-            target.live = 0
-            target.hit()
-            target = Target()
+        if b.hittest(target_1) and target_1.live:
+            target_1.live = 0
+            target_1.hit()
+            target_1 = Target()
+            balls.remove(b)
+            SCORE += 1
+    for b in balls:
+        b.move()
+        if b.hittest(target_2) and target_2.live:
+            target_2.live = 0
+            target_2.hit()
+            target_2 = Target()
             balls.remove(b)
             SCORE += 1
 
